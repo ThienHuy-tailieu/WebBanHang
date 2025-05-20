@@ -21,10 +21,13 @@ namespace WebBanHang.Controllers
             _db = db;
             _hosting = hosting;
         }
-        public IActionResult Index()
+        public IActionResult Index(int? page)
         {
             var dsSanPham = _db.Products.Include(x => x.Category).ToList();
-            return View(dsSanPham);
+            int pageIndex = page??1;
+            int pageSize = 5;
+            ViewBag.PageSum = (int)Math.Ceiling((double)dsSanPham.Count / pageSize);
+            return View(dsSanPham.Skip((pageIndex-1)*pageSize).Take(pageSize).ToList());
         }
         
         //Hiển thị form thêm sản phẩm mới
@@ -147,7 +150,7 @@ namespace WebBanHang.Controllers
             return View(product);
         }
         //Xử lý xóa sản phẩm
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName("DeleteConfirmed")]
         public IActionResult DeleteConfirmed(int id)
         {
             var product = _db.Products.Find(id);
