@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -19,11 +20,14 @@ namespace WebBanHang.Controllers
             _db = db;
         }
 
-        public IActionResult Index(int page=1)
+        public IActionResult Index(int? page)
         {
-            var pageSize = 6;
-            var dsSanpham = _db.Products.ToList();
-            return View(dsSanpham.Skip((page-1)*pageSize).Take(pageSize).ToList());
+            var dsSanPham = _db.Products.Include(x => x.Category).ToList();
+            int pageIndex = page ?? 1;
+            int pageSize = 6;
+            ViewBag.PageSum = (int)Math.Ceiling((double)dsSanPham.Count / pageSize);
+            ViewBag.PageIndex = page;
+            return View(dsSanPham.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList());
         }
 
         public IActionResult Privacy()
