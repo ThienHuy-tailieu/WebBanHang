@@ -27,6 +27,7 @@ namespace WebBanHang.Controllers
             int pageIndex = page??1;
             int pageSize = 5;
             ViewBag.PageSum = (int)Math.Ceiling((double)dsSanPham.Count / pageSize);
+            ViewBag.PageIndex = page;
             return View(dsSanPham.Skip((pageIndex-1)*pageSize).Take(pageSize).ToList());
         }
         
