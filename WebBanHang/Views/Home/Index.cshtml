@@ -2,57 +2,39 @@
 @{
     ViewData["Title"] = "Home Page";
 }
-
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
+    <p>
+        Learn about <a href="https://docs.microsoft.com/aspnet/core">
+            building Web apps with ASP.NET
+            Core
+        </a>.
+    </p>
 </div>
-
-
-<div class="row">
-    @foreach (var p in Model)
-    {
-        <div class="card mb-3 col-md-4">
-            <h3 class="card-header">@p.Name</h3>
-            <div class="card-body">
-                <h5 class="card-title">Price: <span>@p.Price</span></h5>
-            </div>
-            @if (!string.IsNullOrEmpty(p.ImageUrl))
-            {
-                <img src="/@p.ImageUrl" class="img-fluid" />
-            }
-            else
-            {
-                <svg xmlns="http://www.w3.org/2000/svg" class="d-block user-select-none" width="100%" height="200" aria-label="Placeholder: Image cap" focusable="false" role="img" preserveAspectRatio="xMidYMid slice" viewBox="0 0 318 180" style="font-size:1.125rem;text-anchor:middle">
-                    <rect width="100%" height="100%" fill="#868e96"></rect>
-                    <text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image cap</text>
-                </svg>
-            }
-
-            <div class="card-body">
-                <a href="#" class="card-link">Detail</a>
-                <a href="#" class="card-link">Add to cart</a>
-            </div>
-            <div class="card-footer text-muted">
-                2 days ago
-            </div>
-        </div>
-    }
+<div class="row products">
+    <partial name="_ProductPartial" />
 </div>
-<div>
-    <ul class="pagination justify-content-center">
-        <li class="page-item @(ViewBag.PageIndex == 1 ? "disabled" : "")">
-            <a class="page-link" asp-action="Index" asp-route-page="1">&laquo;</a>
-        </li>
-        @for (var i = 1; i <= ViewBag.PageSum; i++)
-        {
-            <li class="page-item @(ViewBag.PageIndex == i ? "active" : "")">
-                <a class="page-link" asp-action="Index" asp-route-page="@i">@i</a>
-            </li>
-        }
-        <li class="page-item @(ViewBag.PageIndex == ViewBag.PageSum ? "disabled" : "")">
-            <a class="page-link" asp-action="Index" asp-route-page="@ViewBag.PageSum">&raquo;</a>
-        </li>
-    </ul>
+<div class="text-center">
+    <button id="btnLoadMore" class="btn btn-primary">Load More</button>
 </div>
+<!--viet script de su dung ajax voi thu vien JQuery --->
+@section Scripts{
+    <script>
+        let currentPage = 2;
+        $("#btnLoadMore").click(function () {
+            //dung ham ajax cua JQuery
+            $.ajax({
+                url: "/Home/LoadMore",
+                data: { page: currentPage },
+                success: function (data) {
+                    if ($.trim(data) === '')
+                        $("#btnLoadMore").hide();
 
-
+                    else
+                        $(".products").append(data);
+                }
+            });
+            currentPage++;
+        });
+    </script>
+}
